@@ -22,6 +22,8 @@ contract ReleaseMachine is
 
     uint16 public machineServerId;
 
+    uint16 private ballsQuantity;
+
     bool public isOpen;
 
     /// @dev - 18 decimals USD amount
@@ -30,6 +32,10 @@ contract ReleaseMachine is
     event MachineServerIdUpdated(
         uint16 previousMachineServerId,
         uint16 machineServerId
+    );
+    event BallsQuantityUpdated(
+        uint16 previousBallsQuantity,
+        uint16 ballsQuantity
     );
     event IsOpenUpdated(bool previousIsOpen, bool isOpen);
     event ReleasePackItemPriceUpdated(
@@ -40,6 +46,7 @@ contract ReleaseMachine is
 
     constructor(
         uint16 _machineServerId,
+        uint16 _ballsQuantity,
         bool _isOpen,
         uint256 _initialReleasePackItemPrice,
         address _ballContractAddress,
@@ -53,6 +60,7 @@ contract ReleaseMachine is
         ChainlinkPriceFeedCallerOwnable(_chainlinkMaticUsdPriceFeedAddress)
     {
         setMachineServerId(_machineServerId);
+        setBallsQuantity(_ballsQuantity);
         setIsOpen(_isOpen);
         setReleasePackItemPrice(_initialReleasePackItemPrice);
     }
@@ -61,6 +69,11 @@ contract ReleaseMachine is
     function setMachineServerId(uint16 _newMachineServerId) public onlyOwner {
         emit MachineServerIdUpdated(machineServerId, _newMachineServerId);
         machineServerId = _newMachineServerId;
+    }
+
+    function setBallsQuantity(uint16 _newBallsQuantity) public onlyOwner {
+        emit BallsQuantityUpdated(ballsQuantity, _newBallsQuantity);
+        ballsQuantity = _newBallsQuantity;
     }
 
     function setIsOpen(bool _newIsOpen) public onlyOwner {
@@ -114,7 +127,7 @@ contract ReleaseMachine is
     function _buyReleasePack(address _to) private {
         require(isOpen, "MACHINE_IS_NOT_OPEN");
 
-        _callBallBuyOracle(_to, machineServerId, 100, 0, false);
+        _callBallBuyOracle(_to, machineServerId, ballsQuantity, 0, false);
     }
 
     /* Entry points */
